@@ -2,6 +2,7 @@ import representation.Square
 package object representation {
 
   object Square extends Enumeration {
+    type Square = Value
     val
       A8, B8, C8, D8, E8, F8, G8, H8,
       A7, B7, C7, D7, E7, F7, G7, H7,
@@ -24,7 +25,7 @@ package object representation {
   @inline def popBit(square: Int)(board: Long): Long = board & ~(1L << square)
   @inline def popBit(square: Square.Value)(board: Long): Long = board & ~(1L << square.id)
 
-  def printBitboard2(board: Long) : Unit = println {
+  def printBitboard(board: Long) : Unit = println {
     val boardString =
       (0 until 8).map { rank =>
         val row =
