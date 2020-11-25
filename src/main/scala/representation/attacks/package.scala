@@ -1,9 +1,6 @@
 package representation
 
-import representation.Side.Side
-import representation.Square.Square
-
-object Attacks {
+package object attacks {
   /**
    * 8  0 1 1 1 1 1 1 1
    * 7  0 1 1 1 1 1 1 1
@@ -35,6 +32,7 @@ object Attacks {
    * Bitboard (UNSIGNED) : 18229723555195321596
    */
   val notABFile = -217020518514230020L
+
   /**
    * 8  1 1 1 1 1 1 1 0
    * 7  1 1 1 1 1 1 1 0
@@ -66,16 +64,4 @@ object Attacks {
    * Bitboard (UNSIGNED) : 4557430888798830399
    */
   val notHGFile = 4557430888798830399L
-
-  val pawnAttacks : Array[Array[Long]] =
-    Array.tabulate(2, 64)((side, square) => maskPawnAttacks(Side(side), Square(square)))
-
-  def maskPawnAttacks(side: Side, square: Square): Long = {
-    val pieceBoard = setBit(square)(board = 0L)
-    side match {
-      case Side.White => ((pieceBoard & notAFile) >> 9) | ((pieceBoard & notHFile) >> 7)
-      case Side.Black => ((pieceBoard & notAFile) << 7) | ((pieceBoard & notHFile) << 9)
-    }
-  }
-
 }

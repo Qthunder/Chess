@@ -1,6 +1,7 @@
 package representation
 import scala.util.chaining._
 import representation.Square._
+import representation.attacks.Attacks
 object Main extends App {
 
 //  val bitBoard = 0L
@@ -24,6 +25,6 @@ object Main extends App {
 //  printBitboard(Attacks.maskPawnAttacks(E4, Side.White))
 //  printBitboard(Attacks.maskPawnAttacks(E4, Side.Black))
 //  printBitboard(Attacks.maskPawnAttacks(A7, Side.Black))
-  printBitboard(Attacks.maskPawnAttacks(Side.Black, F5))
-  printBitboard(Attacks.maskPawnAttacks(Side.White, F4))
+  printBitboard(Attacks.maskKingAttacks(E4))
+  printBitboard(Attacks.maskKingAttacks(H8))
 }
