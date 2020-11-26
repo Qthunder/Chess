@@ -25,6 +25,8 @@ object Main extends App {
 //  printBitboard(Attacks.maskPawnAttacks(E4, Side.White))
 //  printBitboard(Attacks.maskPawnAttacks(E4, Side.Black))
 //  printBitboard(Attacks.maskPawnAttacks(A7, Side.Black))
-  printBitboard(Attacks.maskKingAttacks(E4))
-  printBitboard(Attacks.maskKingAttacks(H8))
+  val occupancy = E4.asBoard | E5.asBoard | G6.asBoard
+  printBitboard(occupancy)
+  printBitboard(Attacks.bishopAttacks(F4, occupancy))
+  printBitboard(Attacks.rookAttacks(G3, occupancy))
 }

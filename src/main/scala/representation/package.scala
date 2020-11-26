@@ -1,4 +1,4 @@
-import representation.Square
+import representation.Square.Square
 package object representation {
 
   object Square extends Enumeration {
@@ -13,6 +13,10 @@ package object representation {
       A2, B2, C2, D2, E2, F2, G2, H2,
       A1, B1, C1, D1, E1, F1, G1, H1
     = Value
+  }
+
+  implicit class SquareOps(value: Square.Value)  {
+    def asBoard: Long = 1L <<value.id
 
   }
 
@@ -43,5 +47,5 @@ package object representation {
        |Bitboard (UNSIGNED) : $unsignedBitboard
        |""".stripMargin
   }
-
+  def rankAndFile(square: Square): (Int, Int) = (square.id / 8, square.id % 8)
 }

@@ -3,6 +3,7 @@ package representation.attacks
 import representation.Side.Side
 import representation.Square.Square
 import representation.{Side, Square, setBit}
+import representation._
 
 object Attacks {
 
@@ -46,5 +47,49 @@ object Attacks {
     (pieceBoard               << 8) |
     ((pieceBoard & notHFile)  << 9)
   }
+
+  def maskBishopOccupancyBits(square: Square) : Long = {
+    val (pieceRank, pieceFile) = rankAndFile(square)
+
+    val squares =
+      for {
+        rank <- 1 until 7
+        file <- 1 until 7 if rank + file == pieceRank + pieceFile || rank - file == pieceRank - pieceFile
+        targetSquare = rank * 8 + file if square.id != targetSquare
+      } yield 1L << targetSquare
+
+    squares.reduce(_ | _)
+  }
+
+  def maskRookOccupancyBits(square: Square) : Long = {
+    val (pieceRank, pieceFile) = rankAndFile(square)
+    (
+      ((1 until 7) map (_ -> pieceFile)) ++
+      ((1 until 7) map (pieceRank -> _))
+    ).collect {
+      case (rank, file) if rank != pieceRank || file != pieceFile => 1L << (rank * 8 + file)
+    }
+    .reduce(_ | _)
+  }
+
+  private def slidingPieceAttacks(square: Square, occupancy: Long, directions: List[(Int, Int)]) = {
+    val (pieceRank, pieceFile) = rankAndFile(square)
+    directions.flatMap { case (rankDirection, fileDirection) =>
+      (
+        LazyList.iterate(pieceRank)(_ + rankDirection).takeWhile((0 until 8).contains) zip
+          LazyList.iterate(pieceFile)(_ + fileDirection).takeWhile((0 until 8).contains)
+        )
+        .map { case (rank, file) => rank * 8 + file }
+        .takeWhile(square => 0 <= square && square < 64)
+        .map(1L << _)
+        .takeWhile(square => (occupancy & square) == 0)
+        .toList
+    }.fold(0L)(_ | _)  ^ square.asBoard
+  }
+
+  def bishopAttacks(square: Square, occupancy: Long) : Long = slidingPieceAttacks(square, occupancy, List((-1,1),(1,-1),(-1,-1),(1,1)))
+
+  def rookAttacks(square: Square, occupancy: Long) : Long = slidingPieceAttacks(square, occupancy, List((1, 0), (-1, 0), (0, 1), (0, -1)))
+
 
 }
