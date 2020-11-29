@@ -48,4 +48,14 @@ package object representation {
        |""".stripMargin
   }
   def rankAndFile(square: Square): (Int, Int) = (square.id / 8, square.id % 8)
+
+  def countBits(board: Long): Int = {
+    var newBoard = board
+    var count = 0
+    while (newBoard != 0) {
+      newBoard &= newBoard - 1
+      count += 1
+    }
+    count
+  }
 }

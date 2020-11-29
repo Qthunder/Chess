@@ -29,4 +29,5 @@ object Main extends App {
   printBitboard(occupancy)
   printBitboard(Attacks.bishopAttacks(F4, occupancy))
   printBitboard(Attacks.rookAttacks(G3, occupancy))
+  println(countBits(board = occupancy))
 }
