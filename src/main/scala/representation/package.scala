@@ -49,6 +49,7 @@ package object representation {
   }
   def rankAndFile(square: Square): (Int, Int) = (square.id / 8, square.id % 8)
 
+  @inline
   def countBits(board: Long): Int = {
     var newBoard = board
     var count = 0
@@ -58,4 +59,11 @@ package object representation {
     }
     count
   }
+
+  @inline
+  def leastSignificantBitIndex(board: Long): Int =
+    board match {
+      case 0 => -1
+      case _ => countBits((board & -board) - 1)
+    }
 }

@@ -25,9 +25,8 @@ object Main extends App {
 //  printBitboard(Attacks.maskPawnAttacks(E4, Side.White))
 //  printBitboard(Attacks.maskPawnAttacks(E4, Side.Black))
 //  printBitboard(Attacks.maskPawnAttacks(A7, Side.Black))
-  val occupancy = E4.asBoard | E5.asBoard | G6.asBoard
+  val occupancy = -1
   printBitboard(occupancy)
-  printBitboard(Attacks.bishopAttacks(F4, occupancy))
-  printBitboard(Attacks.rookAttacks(G3, occupancy))
   println(countBits(board = occupancy))
+  println(Square(leastSignificantBitIndex(occupancy)))
 }
