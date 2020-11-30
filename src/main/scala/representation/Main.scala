@@ -25,8 +25,17 @@ object Main extends App {
 //  printBitboard(Attacks.maskPawnAttacks(E4, Side.White))
 //  printBitboard(Attacks.maskPawnAttacks(E4, Side.Black))
 //  printBitboard(Attacks.maskPawnAttacks(A7, Side.Black))
-  val occupancy = -1
-  printBitboard(occupancy)
-  println(countBits(board = occupancy))
-  println(Square(leastSignificantBitIndex(occupancy)))
+//  val occupancy = -1
+//  printBitboard(occupancy)
+//  println(countBits(board = occupancy))
+//  println(Square(leastSignificantBitIndex(occupancy)))
+//  for (index <- 0 until 100) {
+//    printBitboard(Attacks.setOccupancy(index, countBits(Attacks.maskRookOccupancyBits(A1)), Attacks.maskRookOccupancyBits(A1)))
+//  }
+
+  println(random.xorshift32())
+  println(random.xorshift32())
+  println(random.xorshift32())
+  println(random.xorshift32())
+  println(random.xorshift32())
 }

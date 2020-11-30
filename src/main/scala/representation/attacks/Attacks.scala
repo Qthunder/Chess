@@ -16,6 +16,8 @@ object Attacks {
   val kingAttacks : Array[Long] =
     Array.tabulate(64)((Square(_)) andThen maskKingAttacks)
 
+  val rookOccupancyBitCounts : Array[Long] = Array.tabulate(64)((Square(_)) andThen maskRookOccupancyBits)
+
   def maskPawnAttacks(side: Side, square: Square): Long = {
     val pieceBoard = setBit(square)(board = 0L)
     side match {
@@ -84,12 +86,25 @@ object Attacks {
         .map(1L << _)
         .takeWhile(square => (occupancy & square) == 0)
         .toList
-    }.fold(0L)(_ | _)  ^ square.asBoard
+    }.fold(0L)(_ | _) ^ square.asBoard
   }
 
   def bishopAttacks(square: Square, occupancy: Long) : Long = slidingPieceAttacks(square, occupancy, List((-1,1),(1,-1),(-1,-1),(1,1)))
 
   def rookAttacks(square: Square, occupancy: Long) : Long = slidingPieceAttacks(square, occupancy, List((1, 0), (-1, 0), (0, 1), (0, -1)))
+
+  def setOccupancy(index: Int, attackCount: Int, attacks: Long): Long = {
+    //TODO rewrite scala-y
+    var occupancy = 0L
+    var remainingAttacks = attacks
+    for (count <- 0 until attackCount) {
+      val square: Int = leastSignificantBitIndex(remainingAttacks)
+      remainingAttacks = popBit(square)(remainingAttacks)
+      if ((index & (1 << count)) != 0)
+        occupancy |= 1L << square
+    }
+    occupancy
+  }
 
 
 }
