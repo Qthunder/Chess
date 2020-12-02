@@ -15,19 +15,19 @@ package object representation {
     = Value
   }
 
-  implicit class SquareOps(value: Square.Value)  {
+  implicit class SquareOps(value: Square)  {
     def asBoard: Long = 1L <<value.id
 
   }
 
   @inline def getBit(board: Long, square: Int): Long = board & (1L << square)
-  @inline def getBit(board: Long, square: Square.Value): Long = board & (1L << square.id)
+  @inline def getBit(board: Long, square: Square): Long = board & (1L << square.id)
 
   @inline def setBit(square: Int)(board: Long): Long = board | (1L << square)
   @inline def setBit(square: Square.Value)(board: Long): Long = board | (1L << square.id)
 
   @inline def popBit(square: Int)(board: Long): Long = board & ~(1L << square)
-  @inline def popBit(square: Square.Value)(board: Long): Long = board & ~(1L << square.id)
+  @inline def popBit(square: Square)(board: Long): Long = board & ~(1L << square.id)
 
   def printBitboard(board: Long) : Unit = println {
     val boardString =

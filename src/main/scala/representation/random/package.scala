@@ -10,4 +10,11 @@ package object random {
     state = newState
     newState
   }
+
+  def random32Bits(): Long = xorshift32().toLong
+  def random64Bits(): Long = {
+    val a,b,c,d = random32Bits() & 0xFFFF
+    a | b << 16 | c << 32 | d << 48
+  }
+  def magicNumberCandidate(): Long = random64Bits() & random64Bits() & random64Bits()
 }
