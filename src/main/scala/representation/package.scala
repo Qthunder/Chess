@@ -1,40 +1,40 @@
-import representation.Square.Square
 package object representation {
 
-  object Square extends Enumeration {
-    type Square = Value
-    val
-      A8, B8, C8, D8, E8, F8, G8, H8,
-      A7, B7, C7, D7, E7, F7, G7, H7,
-      A6, B6, C6, D6, E6, F6, G6, H6,
-      A5, B5, C5, D5, E5, F5, G5, H5,
-      A4, B4, C4, D4, E4, F4, G4, H4,
-      A3, B3, C3, D3, E3, F3, G3, H3,
-      A2, B2, C2, D2, E2, F2, G2, H2,
-      A1, B1, C1, D1, E1, F1, G1, H1
-    = Value
+  class Square private (val index: Int) extends AnyVal {
+    @inline def asBoard: Long = 1L << index
   }
 
-  implicit class SquareOps(value: Square)  {
-    def asBoard: Long = 1L <<value.id
-
+  object Square {
+    private val all: List[List[Square]] = List.tabulate(8, 8)(_ * 8 + _).map(_.map(Square(_)))
+    private val List(r8,r7,r6,r5,r4,r3,r2,r1) = all
+    val List(a8, b8, c8, d8, e8, f8, g8, h8) = r8
+    val List(a7, b7, c7, d7, e7, f7, g7, h7) = r7
+    val List(a6, b6, c6, d6, e6, f6, g6, h6) = r6
+    val List(a5, b5, c5, d5, e5, f5, g5, h5) = r5
+    val List(a4, b4, c4, d4, e4, f4, g4, h4) = r4
+    val List(a3, b3, c3, d3, e3, f3, g3, h3) = r3
+    val List(a2, b2, c2, d2, e2, f2, g2, h2) = r2
+    val List(a1, b1, c1, d1, e1, f1, g1, h1) = r1
+    val values: List[Square] = all.flatten
+    val NO_SQUARE = new Square(-1)
+    @inline
+    def apply(index: Int) = new Square(index)
   }
 
-  @inline def getBit(board: Long, square: Int): Long = board & (1L << square)
-  @inline def getBit(board: Long, square: Square): Long = board & (1L << square.id)
 
-  @inline def setBit(square: Int)(board: Long): Long = board | (1L << square)
-  @inline def setBit(square: Square.Value)(board: Long): Long = board | (1L << square.id)
 
-  @inline def popBit(square: Int)(board: Long): Long = board & ~(1L << square)
-  @inline def popBit(square: Square)(board: Long): Long = board & ~(1L << square.id)
+  @inline def getBit(board: Long, square: Square): Long = board & (1L << square.index)
+
+  @inline def setBit(square: Square)(board: Long): Long = board | (1L << square.index)
+
+  @inline def popBit(square: Square)(board: Long): Long = board & ~(1L << square.index)
 
   def printBitboard(board: Long) : Unit = println {
     val boardString =
       (0 until 8).map { rank =>
         val row =
           (0 until 8)
-            .map(file => if (getBit(board, rank * 8 + file) == 0) 0 else 1)
+            .map(file => if (getBit(board, Square(rank * 8 + file)) == 0) 0 else 1)
             .mkString(" ")
         s"${8 - rank}  $row"
       }.mkString("\n")
@@ -47,7 +47,7 @@ package object representation {
        |Bitboard (UNSIGNED) : $unsignedBitboard
        |""".stripMargin
   }
-  def rankAndFile(square: Square): (Int, Int) = (square.id / 8, square.id % 8)
+  def rankAndFile(square: Square): (Int, Int) = (square.index / 8, square.index % 8)
 
   @inline
   def countBits(board: Long): Int = {
@@ -61,9 +61,9 @@ package object representation {
   }
 
   @inline
-  def leastSignificantBitIndex(board: Long): Int =
+  def leastSignificantBitIndex(board: Long): Square =
     board match {
-      case 0 => -1
-      case _ => countBits((board & -board) - 1)
+      case 0 => Square.NO_SQUARE
+      case _ => Square(countBits((board & -board) - 1))
     }
 }

@@ -1,8 +1,24 @@
 package representation
 import scala.util.chaining._
 import representation.Square._
-import representation.attacks.Attacks
+import representation.attacks.{Attacks, notHFile}
 object Main extends App {
+
+//  val isValid = println {
+//    Attacks.checkMagicNumber(
+//      magicNumber = 0x40040844404084L,
+//      occupancies = Array.tabulate(1 << Attacks.bishopOccupancyBitCounts(a8.index))(index =>
+//        Attacks.setOccupancy(
+//          index = index,
+//          attackCount = Attacks.bishopOccupancyBitCounts(a8.index),
+//          attacks = Attacks.maskBishopOccupancyBits(a8)
+//        )
+//      ),
+//      relevantBits = Attacks.bishopOccupancyBitCounts(a8.index),
+//      fullOccupancy = Attacks.maskBishopOccupancyBits(a8),
+//      attacks = Array.tabulate(1 << Attacks.bishopOccupancyBitCounts(a8.index))(Attacks.bishopAttacks(a8, _))
+//    )
+//  }
 
   //  val bitBoard = 0L
   //  printBitboard2(board =
@@ -10,7 +26,7 @@ object Main extends App {
   //    .pipe(setBit(E4))
   //    .pipe(setBit(H8))
   //    .pipe(popBit(E4))
-  //    .pipe(setBit(H1))
+  //    .pipe(setBit(a8))
   //    .pipe(popBit(E6))
   //  )
 
@@ -33,21 +49,33 @@ object Main extends App {
   //    printBitboard(Attacks.setOccupancy(index, countBits(Attacks.maskRookOccupancyBits(A1)), Attacks.maskRookOccupancyBits(A1)))
   //  }
 
-  println(random.xorshift32())
-  println(random.xorshift32())
-  println(random.xorshift32())
-  println(random.xorshift32())
-  println(random.xorshift32())
-  printBitboard((countBits(random.random64Bits())))
-  println(countBits(random.random64Bits()))
-  println(countBits(random.random64Bits()))
-  println(countBits(random.random64Bits()))
+//  println(random.xorshift32())
+//  println(random.xorshift32())
+//  println(random.xorshift32())
+//  println(random.xorshift32())
+//  println(random.xorshift32())
+//  printBitboard((countBits(random.random64Bits())))
+//  println(countBits(random.random64Bits()))
+//  println(countBits(random.random64Bits()))
+//  println(countBits(random.random64Bits()))
+//
+//  println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+//
+//  println(countBits(random.magicNumberCandidate()))
+//  println(countBits(random.magicNumberCandidate()))
+//  println(countBits(random.magicNumberCandidate()))
+//  println(countBits(random.magicNumberCandidate()))
+//  println(countBits(random.magicNumberCandidate()))
 
-  println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
-  println(countBits(random.magicNumberCandidate()))
-  println(countBits(random.magicNumberCandidate()))
-  println(countBits(random.magicNumberCandidate()))
-  println(countBits(random.magicNumberCandidate()))
-  println(countBits(random.magicNumberCandidate()))
+
+//  println(Attacks.bishopMagicNumbers.mkString("Array(\n", ",\n", ")"))
+
+  val occupancy =
+    ((0 until 16) concat (48 until 64)) map (Square(_)) map (setBit(_)(0L)) reduce(_ | _)
+
+  val attacks =
+
+    (((occupancy & Attacks.maskRookOccupancyBits(e4)) * Attacks.rookMagicNumbers(e4.index)) >> (64 - Attacks.rookOccupancyBitCounts(e4.index))) & ((1 << Attacks.rookOccupancyBitCounts(e4.index)) - 1)
+  printBitboard(attacks)
 }
