@@ -1,6 +1,7 @@
 package representation
 import scala.util.chaining._
 import representation.Square._
+import representation.attacks.Attacks.setOccupancy
 import representation.attacks.{Attacks, notHFile}
 object Main extends App {
 
@@ -71,5 +72,8 @@ object Main extends App {
 
 //  println(Attacks.bishopMagicNumbers.mkString("Array(\n", ",\n", ")"))
 
+  val occupancy =
+    ((0 until 16) concat (48 until 64)) map (Square(_)) map (setBit(_)(0L)) reduce(_ | _)
 
+  println(Attacks.rookMagicNumbers.mkString("Array(", ",\n", ")"))
 }

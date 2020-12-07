@@ -5,6 +5,7 @@ import representation.{Side, Square, setBit}
 import representation._
 
 import java.util
+import scala.util.control.Breaks.{break, breakable}
 
 object Attacks {
 
@@ -24,14 +25,14 @@ object Attacks {
     Square.values.toArray.zip(rookOccupancyBitCounts).map {
       case (square, occupancyBitCount) =>
        println(s"Calculating rook magic number for square ${square.index}")
-       findMagicNumber(occupancyBitCount, rookAttacks(square, _), maskRookOccupancyBits(square)).get
+       findMagicNumber(occupancyBitCount, rookAttacks(square, _), maskRookOccupancyBits(square))
     }
 
   val bishopMagicNumbers : Array[Long] =
     Square.values.toArray.zip(bishopOccupancyBitCounts).map {
       case (square, occupancyBitCount) =>
         println(s"Calculating bishop magic number for square ${square.index}")
-        findMagicNumber(occupancyBitCount, bishopAttacks(square, _), maskBishopOccupancyBits(square)).get
+        findMagicNumber(occupancyBitCount, bishopAttacks(square, _), maskBishopOccupancyBits(square))
     }
   def maskPawnAttacks(side: Side, square: Square): Long = {
     val pieceBoard = setBit(square)(board = 0L)
@@ -121,18 +122,23 @@ object Attacks {
     occupancy
   }
 
-  private def findMagicNumber(relevantBits: Int, attack: Long => Long, fullOccupancy: Long) = {
+  private def findMagicNumber(relevantBits: Int, attack: Long => Long, fullOccupancy: Long): Long = {
     val occupanciesCount = 1 << relevantBits
     val occupancies: Array[Long] = Array.tabulate(occupanciesCount)(setOccupancy(_, relevantBits, fullOccupancy))
     val attacks: Array[Long] = occupancies.map(attack)
     val usedAttacks = Array.fill(occupanciesCount)(0L)
-    LazyList
-      .continually(random.magicNumberCandidate())
-      .find(checkMagicNumber(_, occupancies, relevantBits, fullOccupancy, attacks, usedAttacks))
+    var isValid = false
+    var magicNumber: Long = 0L
+    var count = 0
+    while (!isValid) {
+      magicNumber = random.magicNumberCandidate()
+      count += 1
+      isValid = checkMagicNumber(magicNumber, occupancies, relevantBits, fullOccupancy, attacks, usedAttacks)
+    }
+    magicNumber
   }
 
-
-  def checkMagicNumber(
+  @inline def checkMagicNumber(
     magicNumber: Long,
     occupancies: Array[Long],
     relevantBits: Int,
@@ -141,22 +147,22 @@ object Attacks {
     usedAttacks: Array[Long]
   ): Boolean = {
       util.Arrays.fill(usedAttacks, 0L)
-      (countBits((fullOccupancy * magicNumber) & 0xFF00000000000000L) >= 6) &&
-        occupancies.zipWithIndex.forall { case (occupancy, index) =>
-//                    println(s"Occupancy #$index")
-//                    printBitboard(occupancy)
-          val mult = (occupancy * magicNumber)
-//                    println("Multiplying occupancy by magic number")
-//                    printBitboard(mult)
-          val magicIndex = (mult >> (64 - relevantBits)) & ((1 << relevantBits) - 1)
-//                    println(s"Checking magic index $magicIndex... ")
-//                    printBitboard(magicIndex.toLong)
-          (usedAttacks(magicIndex.toInt) == 0L && {
-            usedAttacks.update(magicIndex.toInt, attacks(index));
-            true
-          }) || usedAttacks(magicIndex.toInt) == attacks(index)
-          // || {println(s"Giving up at index $index"); false}
-        }
+      (countBits((fullOccupancy * magicNumber) & 0xFF00000000000000L) >= 6) && {
+        var isValid = true
+        breakable {
+          for (index <- occupancies.indices) {
+              val occupancy = occupancies(index)
+              val magicIndex = ((occupancy * magicNumber >> (64 - relevantBits)) & ((1 << relevantBits) - 1)).toInt
+              if (usedAttacks(magicIndex.toInt) == 0L)
+                usedAttacks.update(magicIndex.toInt, attacks(index))
+              else if (usedAttacks(magicIndex.toInt) != attacks(index)) {
+                isValid = false
+                break();
+              }
+            }
+          }
+        isValid
+      }
   }
 }
 

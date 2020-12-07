@@ -16,5 +16,5 @@ package object random {
     val a,b,c,d = random32Bits() & 0xFFFF
     a | b << 16 | c << 32 | d << 48
   }
-  def magicNumberCandidate(): Long = random64Bits() & random64Bits() & random64Bits()
+  @inline def magicNumberCandidate(): Long = random64Bits() & random64Bits() & random64Bits()
 }
