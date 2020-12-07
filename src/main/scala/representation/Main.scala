@@ -71,11 +71,5 @@ object Main extends App {
 
 //  println(Attacks.bishopMagicNumbers.mkString("Array(\n", ",\n", ")"))
 
-  val occupancy =
-    ((0 until 16) concat (48 until 64)) map (Square(_)) map (setBit(_)(0L)) reduce(_ | _)
 
-  val attacks =
-
-    (((occupancy & Attacks.maskRookOccupancyBits(e4)) * Attacks.rookMagicNumbers(e4.index)) >> (64 - Attacks.rookOccupancyBitCounts(e4.index))) & ((1 << Attacks.rookOccupancyBitCounts(e4.index)) - 1)
-  printBitboard(attacks)
 }

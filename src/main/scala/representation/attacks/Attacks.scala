@@ -4,6 +4,8 @@ import representation.Side.Side
 import representation.{Side, Square, setBit}
 import representation._
 
+import java.util
+
 object Attacks {
 
   val pawnAttacks : Array[Array[Long]] =
@@ -21,7 +23,7 @@ object Attacks {
   val rookMagicNumbers: Array[Long] =
     Square.values.toArray.zip(rookOccupancyBitCounts).map {
       case (square, occupancyBitCount) =>
-       println(s"Calculating rook magic number for piece ${square.index}")
+       println(s"Calculating rook magic number for square ${square.index}")
        findMagicNumber(occupancyBitCount, rookAttacks(square, _), maskRookOccupancyBits(square)).get
     }
 
@@ -123,7 +125,10 @@ object Attacks {
     val occupanciesCount = 1 << relevantBits
     val occupancies: Array[Long] = Array.tabulate(occupanciesCount)(setOccupancy(_, relevantBits, fullOccupancy))
     val attacks: Array[Long] = occupancies.map(attack)
-    LazyList.continually(random.magicNumberCandidate()).find(checkMagicNumber(_, occupancies, relevantBits, fullOccupancy, attacks))
+    val usedAttacks = Array.fill(occupanciesCount)(0L)
+    LazyList
+      .continually(random.magicNumberCandidate())
+      .find(checkMagicNumber(_, occupancies, relevantBits, fullOccupancy, attacks, usedAttacks))
   }
 
 
@@ -132,11 +137,10 @@ object Attacks {
     occupancies: Array[Long],
     relevantBits: Int,
     fullOccupancy: Long,
-    attacks: Array[Long]): Boolean = {
-      val usedAttacks: Array[Long] = Array.fill(1 << relevantBits)(0L)
-//          println(s"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-//          println(s"Trying magic number:")
-//          printBitboard(magicNumber)
+    attacks: Array[Long],
+    usedAttacks: Array[Long]
+  ): Boolean = {
+      util.Arrays.fill(usedAttacks, 0L)
       (countBits((fullOccupancy * magicNumber) & 0xFF00000000000000L) >= 6) &&
         occupancies.zipWithIndex.forall { case (occupancy, index) =>
 //                    println(s"Occupancy #$index")
@@ -150,7 +154,8 @@ object Attacks {
           (usedAttacks(magicIndex.toInt) == 0L && {
             usedAttacks.update(magicIndex.toInt, attacks(index));
             true
-          }) // || usedAttacks(magicIndex.toInt) == attacks(index) || {println(s"Giving up at index $index"); false}
+          }) || usedAttacks(magicIndex.toInt) == attacks(index)
+          // || {println(s"Giving up at index $index"); false}
         }
   }
 }
