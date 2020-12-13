@@ -1,8 +1,8 @@
 package representation
-import scala.util.chaining._
 import representation.Square._
-import representation.attacks.Attacks.setOccupancy
-import representation.attacks.{Attacks, notHFile}
+import representation.attacks.SliderAttacks
+
+import scala.util.chaining.scalaUtilChainingOps
 object Main extends App {
 
 //  val isValid = println {
@@ -69,11 +69,15 @@ object Main extends App {
 //  println(countBits(random.magicNumberCandidate()))
 
 
+  val occupancy =
+    0L
+      .pipe(setBit(g6))
+      .pipe(setBit(h7))
+      .pipe(setBit(b7))
+      .pipe(setBit(f2))
+      .pipe(setBit(b4))
 
 //  println(Attacks.bishopMagicNumbers.mkString("Array(\n", ",\n", ")"))
 
-  val occupancy =
-    ((0 until 16) concat (48 until 64)) map (Square(_)) map (setBit(_)(0L)) reduce(_ | _)
-
-  println(Attacks.rookMagicNumbers.mkString("Array(", ",\n", ")"))
+  printBitboard(SliderAttacks.Bishop.getAttacks(e4, occupancy))
 }

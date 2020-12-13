@@ -1,7 +1,17 @@
 package object representation {
+  type BitBoard = Long
+
+//  trait IsIndex extends Any {
+//    def index: Int
+//  }
+//
+//  final class ArrayI[I <: IsIndex, T](val array: Array[T]) extends AnyVal {
+//    @inline def apply(i: I): T = array(i.index)
+//    @inline def update(i: I, value: T): Unit = array.update(i.index, value)
+//  }
 
   class Square private (val index: Int) extends AnyVal {
-    @inline def asBoard: Long = 1L << index
+    @inline def asBoard: BitBoard = 1L << index
   }
 
   object Square {
@@ -17,24 +27,23 @@ package object representation {
     val List(a1, b1, c1, d1, e1, f1, g1, h1) = r1
     val values: List[Square] = all.flatten
     val NO_SQUARE = new Square(-1)
-    @inline
-    def apply(index: Int) = new Square(index)
+    @inline def apply(index: Int) = new Square(index)
   }
 
 
 
-  @inline def getBit(board: Long, square: Square): Long = board & (1L << square.index)
+  @inline def getBit(board: BitBoard, square: Square): BitBoard = board & (1L << square.index)
 
-  @inline def setBit(square: Square)(board: Long): Long = board | (1L << square.index)
+  @inline def setBit(square: Square)(board: BitBoard): BitBoard = board | (1L << square.index)
 
-  @inline def popBit(square: Square)(board: Long): Long = board & ~(1L << square.index)
+  @inline def popBit(square: Square)(board: BitBoard): BitBoard = board & ~(1L << square.index)
 
-  def printBitboard(board: Long) : Unit = println {
+  def printBitboard(board: BitBoard) : Unit = println {
     val boardString =
       (0 until 8).map { rank =>
         val row =
           (0 until 8)
-            .map(file => if (getBit(board, Square(rank * 8 + file)) == 0) 0 else 1)
+            .map(file => if (getBit(board, Square(rank * 8 + file)) == 0) "⬜" else "⬛")
             .mkString(" ")
         s"${8 - rank}  $row"
       }.mkString("\n")
