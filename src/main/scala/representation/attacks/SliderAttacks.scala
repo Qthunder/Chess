@@ -117,7 +117,7 @@ abstract class SliderAttacks(directions: List[(Int, Int)]) {
 
 object SliderAttacks {
 
-  object Rook extends SliderAttacks(List((1, 0), (-1, 0), (0, 1), (0, -1))) {
+  object Rook extends SliderAttacks(directions = List((1, 0), (-1, 0), (0, 1), (0, -1))) {
     override protected def calculateOccupancyBits(square: Square): BitBoard = {
       val (pieceRank, pieceFile) = rankAndFile(square)
       (
@@ -130,7 +130,7 @@ object SliderAttacks {
     }
   }
 
-  object Bishop extends SliderAttacks(List((-1, 1), (1, -1), (-1, -1), (1, 1))) {
+  object Bishop extends SliderAttacks(directions = List((-1, 1), (1, -1), (-1, -1), (1, 1))) {
     override protected def calculateOccupancyBits(square: Square): BitBoard = {
       val (pieceRank, pieceFile) = rankAndFile(square)
 

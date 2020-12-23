@@ -1,3 +1,7 @@
+import representation.CastlingRights.{BlackKingSide, BlackQueenSide, WhiteKingSide, WhiteQueenSide}
+import representation.CastlingSide.CastlingSide
+import representation.Side.Side
+
 package object representation {
   type BitBoard = Long
 
@@ -9,6 +13,26 @@ package object representation {
 //    @inline def apply(i: I): T = array(i.index)
 //    @inline def update(i: I, value: T): Unit = array.update(i.index, value)
 //  }
+
+  class CastlingRights private(private val value: Int) extends AnyVal {
+    @inline def +(other: CastlingRights) = new CastlingRights(value | other.value)
+    @inline def canCastle(side: Side, castlingSide: CastlingSide): Boolean = (side, castlingSide) match {
+      case (Side.White, CastlingSide.KingSide) => value & WhiteKingSide.value == 0
+      case (Side.White, CastlingSide.QueenSide) => value & WhiteQueenSide.value == 0
+      case (Side.Black, CastlingSide.KingSide) => value & BlackKingSide.value == 0
+      case (Side.Black, CastlingSide.QueenSide) => value & BlackQueenSide.value == 0
+    }
+  }
+  object CastlingRights {
+    val None = new CastlingRights(0)
+    val WhiteQueenSide = new CastlingRights(1)
+    val WhiteKingSide = new CastlingRights(2)
+    val BlackKingSide = new CastlingRights(4)
+    val BlackQueenSide = new CastlingRights(8)
+    val WhiteBothSides: CastlingRights = WhiteKingSide + WhiteQueenSide
+    val BlackBothSides: CastlingRights = BlackKingSide + BlackQueenSide
+    val All: CastlingRights = WhiteBothSides + BlackBothSides
+  }
 
   class Square private (val index: Int) extends AnyVal {
     @inline def asBoard: BitBoard = 1L << index
