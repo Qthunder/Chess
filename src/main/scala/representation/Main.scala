@@ -14,4 +14,6 @@ object Main extends App {
       .pipe(setBit(b4))
 
   printBitboard(SliderAttacks.Bishop.getAttacks(e4, occupancy))
+
+  Board.starting.print()
 }

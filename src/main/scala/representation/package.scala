@@ -1,5 +1,6 @@
 import representation.CastlingRights.{BlackKingSide, BlackQueenSide, WhiteKingSide, WhiteQueenSide}
 import representation.CastlingSide.CastlingSide
+import representation.PieceType.PieceType
 import representation.Side.Side
 
 package object representation {
@@ -16,11 +17,16 @@ package object representation {
 
   class CastlingRights private(private val value: Int) extends AnyVal {
     @inline def +(other: CastlingRights) = new CastlingRights(value | other.value)
+
     @inline def canCastle(side: Side, castlingSide: CastlingSide): Boolean = (side, castlingSide) match {
-      case (Side.White, CastlingSide.KingSide) => value & WhiteKingSide.value == 0
-      case (Side.White, CastlingSide.QueenSide) => value & WhiteQueenSide.value == 0
-      case (Side.Black, CastlingSide.KingSide) => value & BlackKingSide.value == 0
-      case (Side.Black, CastlingSide.QueenSide) => value & BlackQueenSide.value == 0
+      case (Side.White, CastlingSide.KingSide) => (value & WhiteKingSide.value) != 0
+      case (Side.White, CastlingSide.QueenSide) => (value & WhiteQueenSide.value) != 0
+      case (Side.Black, CastlingSide.KingSide) => (value & BlackKingSide.value) != 0
+      case (Side.Black, CastlingSide.QueenSide) => (value & BlackQueenSide.value) != 0
+    }
+
+    @inline override def toString: String = {
+      s"White: ${if (canCastle(Side.White, CastlingSide.QueenSide)) "⬅ " else "- "}${if (canCastle(Side.White, CastlingSide.KingSide)) "➡ " else "- " } Black: ${if (canCastle(Side.Black, CastlingSide.QueenSide)) "⬅ " else "- " }${if (canCastle(Side.Black, CastlingSide.QueenSide)) "➡ " else "- "}"
     }
   }
   object CastlingRights {
@@ -40,7 +46,7 @@ package object representation {
 
   object Square {
     private val all: List[List[Square]] = List.tabulate(8, 8)(_ * 8 + _).map(_.map(Square(_)))
-    private val List(r8,r7,r6,r5,r4,r3,r2,r1) = all
+    val List(r8,r7,r6,r5,r4,r3,r2,r1) = all
     val List(a8, b8, c8, d8, e8, f8, g8, h8) = r8
     val List(a7, b7, c7, d7, e7, f7, g7, h7) = r7
     val List(a6, b6, c6, d6, e6, f6, g6, h6) = r6
@@ -99,4 +105,19 @@ package object representation {
       case 0 => Square.NO_SQUARE
       case _ => Square(countBits((board & -board) - 1))
     }
+
+  val sideAndPieceToChar: (Side, PieceType) => String = {
+    case (Side.White, PieceType.Pawn) => "♙"
+    case (Side.White, PieceType.Knight) => "♘"
+    case (Side.White, PieceType.Bishop) => "♗"
+    case (Side.White, PieceType.Rook) => "♗"
+    case (Side.White, PieceType.Queen) => "♕"
+    case (Side.White, PieceType.King) => "♔"
+    case (Side.Black, PieceType.Pawn) => "♟"
+    case (Side.Black, PieceType.Knight) => "♞"
+    case (Side.Black, PieceType.Bishop) => "♝"
+    case (Side.Black, PieceType.Rook) => "♜"
+    case (Side.Black, PieceType.Queen) => "♛"
+    case (Side.Black, PieceType.King) => "♚"
+  }
 }
