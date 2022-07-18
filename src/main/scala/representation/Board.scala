@@ -91,4 +91,6 @@ object Board {
         0L,
         0L
   )
+  def empty: Board =
+    Board(0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L,  0L, 0L,0L,0L, CastlingRights.All, Side.White, 0L, 0L, 0L)
 }

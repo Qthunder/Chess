@@ -15,4 +15,5 @@ scalacOptions ++=
 libraryDependencies ++=
   List(
     "org.typelevel" %% "cats-core" % "2.3.0",
+    "org.scala-lang.modules" %% "scala-parser-combinators" % "2.1.0"
   )
